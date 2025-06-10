@@ -10,8 +10,8 @@ Este projeto implementa um servidor Express com Node.js para importação e cons
 
 ## Endpoints da API
 
-### `GET /censo`
-Lista todos os setores censitários armazenados no banco de dados.
+### `GET /censo?city=name`
+Lista todos os setores censitários de uma cidade armazenados no banco de dados.
 
 ### `GET /censo/point?y=<latitude>&x=<longitude>`
 Consulta o setor censitário que contém o ponto geográfico fornecido.
