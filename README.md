@@ -13,7 +13,7 @@ Este projeto implementa um servidor Express com Node.js para importação e cons
 ### `GET /censo`
 Lista todos os setores censitários armazenados no banco de dados.
 
-### `GET /censo/point?lat=<latitude>&lng=<longitude>`
+### `GET /censo/point?y=<latitude>&x=<longitude>`
 Consulta o setor censitário que contém o ponto geográfico fornecido.
 
 **Exemplo de requisição:**
