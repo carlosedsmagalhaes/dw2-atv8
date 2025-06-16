@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS censo;
+CREATE EXTENSION postgis;
 CREATE TABLE censo (
     cd_setor BIGINT PRIMARY KEY,
     situacao VARCHAR(50),

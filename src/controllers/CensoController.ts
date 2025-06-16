@@ -12,7 +12,11 @@ export async function list(reg: Request, res: Response) {
     try {
       // Obtém todos os setores censitários de uma determinada cidade
       const result = await db.query(
-        `SELECT ST_AsText(geom) as geom
+        `SELECT cd_setor, 
+          situacao, 
+          area_km2, 
+          nm_mun, 
+          ST_AsGeoJSON(geom) as geom
         FROM censo 
         WHERE nm_mun = $1`,
         [city]
@@ -26,7 +30,26 @@ export async function list(reg: Request, res: Response) {
         [city]
       );
 
-      res.json({centroid:result_center.rows[0], polygons:result.rows});
+      const features = result.rows.map((row: any) => ({
+        type: "Feature",
+        geometry: JSON.parse(row.geom),
+        properties: {
+          cd_setor: row.cd_setor,
+          nm_mun: row.nm_mun,
+          area_km2: row.area_km2,
+          situacao: row.situacao,
+        },
+      }));
+
+      const geojson = {
+        type: "FeatureCollection",
+        features,
+      };
+
+      res.json({
+        centroid: result_center.rows[0],
+        geojson,
+      });
     } catch (error: any) {
       res.json({ message: "Erro interno do servidor" });
     }
@@ -43,13 +66,26 @@ export async function getByPoint(req: Request, res: Response) {
   } else {
     try {
       const result = await db.query(
-        `SELECT cd_setor, situacao, area_km2, nm_mun, ST_AsText(geom) as geom
+        `SELECT cd_setor, situacao, area_km2, nm_mun, ST_AsGeoJSON(geom) as geom
       FROM censo 
       WHERE ST_Contains(geom, ST_SetSRID(ST_MakePoint($1, $2), 4326))`,
         [parseFloat(x), parseFloat(y)]
       );
 
-      res.json(result.rows[0]);
+      const row = result.rows[0];
+
+      const feature = {
+        type: "Feature",
+        geometry: JSON.parse(row.geom),
+        properties: {
+          cd_setor: row.cd_setor,
+          nm_mun: row.nm_mun,
+          area_km2: row.area_km2,
+          situacao: row.situacao,
+        },
+      };
+
+      res.json(feature);
     } catch (error: any) {
       res.json({ message: "Erro interno do servidor" });
     }
